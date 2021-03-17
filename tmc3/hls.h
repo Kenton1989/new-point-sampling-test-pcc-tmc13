@@ -170,6 +170,7 @@ toXyz(AxisOrder order, const Vec3<T>& stv)
   case AxisOrder::kZXY: return {stv.t(), stv.v(), stv.s()};
   case AxisOrder::kYXZ: return {stv.t(), stv.s(), stv.v()};
   case AxisOrder::kXYZ_7: return {stv.s(), stv.t(), stv.v()};
+  default: return stv;
   }
 }
 
@@ -187,6 +188,7 @@ fromXyz(AxisOrder order, const Vec3<T>& xyz)
   case AxisOrder::kZXY: return {xyz.z(), xyz.x(), xyz.y()};
   case AxisOrder::kYXZ: return {xyz.y(), xyz.x(), xyz.z()};
   case AxisOrder::kXYZ_7: return {xyz.x(), xyz.y(), xyz.z()};
+  default: return xyz;
   }
 }
 
