@@ -219,6 +219,38 @@ struct MortonCodeWithIndex {
   }
 };
 
+//---------------------------------------------
+
+namespace Kenton {
+
+
+typedef float FloatT;
+typedef Vec3<int32_t> PointInt;
+typedef Vec3<FloatT> PointFlt;
+
+// Original sampling method
+inline void
+knnSamplingMethod(
+  const PointInt& anchor,
+  const std::vector<MortonCodeWithIndex>& packedVoxel,
+  const std::vector<uint32_t>& retained,
+  const std::vector<int32_t>& neighborIndexes,
+  int32_t (&localIndexes)[3],
+  int64_t (&minDistances)[3]);
+
+inline void
+mySamplingMethod(
+  const PointInt& anchor,
+  const std::vector<MortonCodeWithIndex>& packedVoxel,
+  const std::vector<uint32_t>& retained,
+  std::vector<int32_t>& neighborIndexes,
+  int32_t lodIndex,
+  int32_t (&localIndexes)[3],
+  int64_t (&minDistances)[3]);
+
+} // namespace Kenton
+
+
 //---------------------------------------------------------------------------
 
 struct PCCNeighborInfo {
@@ -782,6 +814,8 @@ computeNearestNeighbors(
         neighborIndexes.resize(0);
         for (int32_t n = 0; n < 27; ++n) {
           const auto neighbMortonCode =
+
+
             morton3dAdd(basePosition, kNeighOffset[n]);
           if ((neighbMortonCode >> atlasBits) != curAtlasId) {
             continue;
@@ -795,12 +829,13 @@ computeNearestNeighbors(
 
       maxNeighCnt = std::max(neighborIndexes.size(), maxNeighCnt);
       totNeighCnt += neighborIndexes.size();
-      // TODO - change the algorithm here from KNN to my algo
-      for (const auto k : neighborIndexes) {
-        updateNearestNeigh(
-          bpoint, packedVoxel[retained[k]].bposition, k, localIndexes,
-          minDistances);
-      }
+
+      Kenton::mySamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
+      // for (const auto k : neighborIndexes) {
+      //   updateNearestNeigh(
+      //     bpoint, packedVoxel[retained[k]].bposition, k, localIndexes,
+      //     minDistances);
+      // }
 
       if (localIndexes[2] == -1) {
         ++lackPointCase;

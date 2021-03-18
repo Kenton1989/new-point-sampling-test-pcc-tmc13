@@ -1,6 +1,3 @@
-#ifndef MY_SAMPLING_METHOD_H
-#define MY_SAMPLING_METHOD_H
-
 #include "PCCTMC3Common.h"
 #include <algorithm>
 #include <iterator>
@@ -9,10 +6,6 @@
 namespace pcc {
 
 namespace Kenton {
-
-typedef float FloatT;
-typedef Vec3<int32_t> PointInt;
-typedef Vec3<FloatT> PointFlt;
 
 // edge case of swapArrElem below
 inline void swapArrElem(size_t i, size_t j) {
@@ -129,5 +122,3 @@ mySamplingMethod(
 } // namespace Kenton
 
 }  // namespace pcc
-
-#endif  // MY_SAMPLING_METHOD_H
