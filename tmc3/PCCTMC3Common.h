@@ -734,6 +734,7 @@ computeNearestNeighbors(
   int64_t curAtlasId = -1;
   int64_t lastMortonCodeShift3 = -1;
   int64_t cubeIndex = 0;
+  int lackPointCase = 0;
   for (int32_t i = startIndex, j = 0; i < endIndex; ++i) {
     int32_t localIndexes[3] = {-1, -1, -1};
     int64_t minDistances[3] = {
@@ -797,6 +798,7 @@ computeNearestNeighbors(
       }
 
       if (localIndexes[2] == -1) {
+        ++lackPointCase;
         const auto center = localIndexes[0] == -1 ? j : localIndexes[0];
         const auto k0 = std::max(0, center - rangeInterLod);
         const auto k1 = std::min(retainedSize - 1, center + rangeInterLod);
@@ -1008,6 +1010,8 @@ computeNearestNeighbors(
       }
     }
   }
+  std::cout << "Case that candidate point smaller than 3: " << lackPointCase
+            << std::endl;
 }
 
 //---------------------------------------------------------------------------
