@@ -43,8 +43,7 @@ knnSamplingMethod(
   }
 }
 
-void
-mySamplingMethod(
+void mySamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,

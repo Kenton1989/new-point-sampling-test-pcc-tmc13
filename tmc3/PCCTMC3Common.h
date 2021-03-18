@@ -223,14 +223,12 @@ struct MortonCodeWithIndex {
 
 namespace Kenton {
 
-
 typedef float FloatT;
 typedef Vec3<int32_t> PointInt;
 typedef Vec3<FloatT> PointFlt;
 
 // Original sampling method
-inline void
-knnSamplingMethod(
+void knnSamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
@@ -238,8 +236,7 @@ knnSamplingMethod(
   int32_t (&localIndexes)[3],
   int64_t (&minDistances)[3]);
 
-inline void
-mySamplingMethod(
+void mySamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
