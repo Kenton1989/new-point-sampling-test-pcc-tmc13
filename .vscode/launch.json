@@ -9,7 +9,10 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\build\\tmc3\\tmc3.exe",
-            "args": [],
+            "args": [
+                "--uncompressedDataPath=\"pc-samples\\andrew9_frame0027.ply\"",
+                "--compressedStreamPath=\"compressed\\andrew9_frame0027.tmc3\""
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\..",
             "environment": [],

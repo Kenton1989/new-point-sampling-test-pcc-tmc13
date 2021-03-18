@@ -630,7 +630,6 @@ updateNearestNeighWithCheck(
 }
 
 //---------------------------------------------------------------------------
-// TODO - change KNN to mine sampling method
 inline void
 computeNearestNeighbors(
   const AttributeParameterSet& aps,
@@ -790,7 +789,7 @@ computeNearestNeighbors(
         }
       }
 
-      // TODO - change the algorithm here from KNN to my algorithm
+      // TODO - change the algorithm here from KNN to my algo
       for (const auto k : neighborIndexes) {
         updateNearestNeigh(
           bpoint, packedVoxel[retained[k]].bposition, k, localIndexes,
