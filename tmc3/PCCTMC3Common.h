@@ -972,10 +972,13 @@ computeNearestNeighbors(
       }
     }
 
+    // calculate neighbour counts
     predictor.neighborCount = std::min(
       aps.num_pred_nearest_neighbours_minus1 + 1,
       (localIndexes[0] != -1) + (localIndexes[1] != -1)
         + (localIndexes[2] != -1));
+
+    // calculte the weight of each point before inverse
     for (int32_t h = 0; h < predictor.neighborCount; ++h) {
       auto& neigh = predictor.neighbors[h];
       neigh.predictorIndex = packedVoxel[localIndexes[h]].index;
@@ -983,6 +986,7 @@ computeNearestNeighbors(
         (packedVoxel[localIndexes[h]].bposition - bpoint).getNorm2<int64_t>();
     }
 
+    // sort three points by weight
     if (predictor.neighborCount > 1) {
       auto predTmp = predictor.neighbors[1];
       if (predictor.neighbors[0].weight > predictor.neighbors[1].weight) {
