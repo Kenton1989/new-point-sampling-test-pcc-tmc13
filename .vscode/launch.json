@@ -10,9 +10,9 @@
             "request": "launch",
             "program": "${workspaceFolder}\\build\\tmc3\\tmc3.exe",
             "args": [
-                // "--uncompressedDataPath=\"pc-samples\\andrew9_frame0027.ply\"",
-                // "--compressedStreamPath=\"compressed\\andrew9_frame0027.tmc3\"",
-                // "--attribute=color"
+                "--uncompressedDataPath=\"pc-samples\\andrew9_frame0027.ply\"",
+                "--compressedStreamPath=\"compressed\\andrew9_frame0027.tmc3\"",
+                "--attribute=color"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\..",

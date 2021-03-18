@@ -8,10 +8,35 @@
 
 namespace pcc {
 
+namespace Kenton {
+
+typedef float FloatT;
+typedef Vec3<int32_t> PointInt;
+typedef Vec3<FloatT> PointFlt;
+
+// edge case of swapArrElem below
+inline void swapArrElem(size_t i, size_t j) {
+  // do nothing
+}
+
+// swap arr[i] & arr[j]. And for each array in arrs, do the same swapping;
+template<typename ArrT, typename... ArrTs>
+inline void swapArrElem(size_t i, size_t j, ArrT& arr, ArrTs&... arrs) {
+  using std::swap;
+  swap(arr[i], arr[j]);
+  swapArrElem(i, j, arrs...);
+}
+
+// dot product (inner product) of vectors
+template <typename T>
+inline T dot(const Vec3<T>& a, const Vec3<T>& b) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
 // Original sampling method
 inline void
 knnSamplingMethod(
-  const Vec3<int32_t>& anchor,
+  const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
   const std::vector<int32_t>& neighborIndexes,
@@ -25,25 +50,12 @@ knnSamplingMethod(
   }
 }
 
-// edge case of swapArrElem
-inline void swapArrElem(size_t i, size_t j) {
-  return;
-}
-
-// swap arr[i] & arr[j], for each array in arrs, also do the same swapping;
-template<typename ArrT, typename... ArrTs>
-inline void swapArrElem(size_t i, size_t j, ArrT& arr, ArrTs&... arrs) {
-  using std::swap;
-  swap(arr[i], arr[j]);
-  swapArrElem(i, j, arrs...);
-}
-
 inline void
 mySamplingMethod(
-  const Vec3<int32_t>& anchor,
+  const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
-  const std::vector<int32_t>& neighborIndexes,
+  std::vector<int32_t>& neighborIndexes,
   int32_t lodIndex,
   int32_t (&localIndexes)[3],
   int64_t (&minDistances)[3])
@@ -54,8 +66,11 @@ mySamplingMethod(
   
   // Model Parameters
   const int DIST_W = 1;
+  // the larger the lod, the longer the distance
+  // increase the weight of angle parameter accordingly
   const int ANGLE_W = lodIndex + 1;
-  const int MIN_CANDI = 3;
+  const int K = 3;
+  const int MIN_CANDI = K;
 
   // fall back onto KNN if too few points
   if (neighborIndexes.size() <= MIN_CANDI) {
@@ -66,22 +81,53 @@ mySamplingMethod(
   }
 
   auto neigSize = neighborIndexes.size();
-  vector<int> cost;
-  vector<Vec3<int32_t>> pos;
+
+  vector<FloatT> cost;
+  // direction of each point from anchor
+  vector<Vec3<FloatT>> dir;
   cost.reserve(neigSize);
-  pos.reserve(neigSize);
+  dir.reserve(neigSize);
 
-  // translate the point, let the anchor point becomes origin point
-  std::transform(neighborIndexes.begin(), neighborIndexes.end(), std::back_inserter(pos), [&](int k){
-    Vec3<int32_t> pt = packedVoxel[retained[k]].bposition;
-    return pt - anchor;
-  });
+  for (int k: neighborIndexes) {
+    const PointInt &pt = packedVoxel[retained[k]].bposition;
+    // initialize cost as distance
+    cost.push_back((pt - anchor).getNorm1());
 
-  // initialize cost as distance
-  std::transform(pos.begin(), pos.end(), std::back_inserter(cost), [&](Vec3<int32_t>& pt) {
-    return pt.getNorm1();
+    // translate the point, let the anchor point becomes origin point ...
+    dir.push_back(pt - anchor);
+    // ... then normalize it
+    dir.back() /= dir.back().getNorm1();
+  }
+
+  // Use the nearest point as first candidate.
+  {
+    // find the minimum value
+    size_t minI = min_element(cost.begin(), cost.end()) - cost.begin();
+    // move it to the front, make sure all all the relative data are swapped.
+    swapArrElem(0, minI, cost, dir, neighborIndexes);
+  }
+
+  for (size_t i = 1; i < K; ++i) {
+    // Update the cost with angular cost
+    for (size_t j = i; j < neigSize; ++j) {
+      cost[j] += dot(dir[i-1], dir[j]) * ANGLE_W;
+    }
+    // find the minimum value
+    size_t minI = min_element(cost.begin(), cost.end()) - cost.begin();
+    // move it to the front, make sure all all the relative data are swapped.
+    swapArrElem(i, minI, cost, dir, neighborIndexes);
+  }
+
+  // write out the result
+  std::copy_n(neighborIndexes.begin(), K, localIndexes);
+  std::transform(localIndexes, localIndexes+K, minDistances, [&](size_t k){
+    const PointInt &pt = packedVoxel[retained[k]].bposition;
+    return (anchor - pt).getNorm1();
   });
 }
+
+} // namespace Kenton
+
 }  // namespace pcc
 
 #endif  // MY_SAMPLING_METHOD_H
