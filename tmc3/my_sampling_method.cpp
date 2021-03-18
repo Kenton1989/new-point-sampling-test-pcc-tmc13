@@ -26,6 +26,13 @@ inline T dot(const Vec3<T>& a, const Vec3<T>& b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
+// dot product (inner product) of vectors
+inline void normalize(Vec3<FloatT>& a) {
+  FloatT norm2 = dot(a, a);
+  a /= sqrt(norm2);
+  // a /= a.getNorm1();
+}
+
 // Original sampling method
 void
 knnSamplingMethod(
@@ -88,7 +95,7 @@ void mySamplingMethod(
     // translate the point, let the anchor point becomes origin point ...
     dir.push_back(pt - anchor);
     // ... then normalize it
-    dir.back() /= dir.back().getNorm1();
+    normalize(dir.back());
   }
 
   // Use the nearest point as first candidate.
@@ -105,7 +112,7 @@ void mySamplingMethod(
       cost[j] += dot(dir[i-1], dir[j]) * ANGLE_W;
     }
     // find the minimum value
-    size_t minI = min_element(cost.begin(), cost.end()) - cost.begin();
+    size_t minI = min_element(cost.begin() + i, cost.end()) - cost.begin();
     // move it to the front, make sure all all the relative data are swapped.
     swapArrElem(i, minI, cost, dir, neighborIndexes);
   }
