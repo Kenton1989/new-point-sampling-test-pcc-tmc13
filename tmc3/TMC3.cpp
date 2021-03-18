@@ -45,6 +45,7 @@
 #include "program_options_lite.h"
 #include "io_tlv.h"
 #include "version.h"
+#include "my_sampling_method.h"
 
 using namespace std;
 using namespace pcc;

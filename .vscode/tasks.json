@@ -3,7 +3,7 @@
         {
             "type": "shell",
             "label": "C/C++: g++.exe build",
-            "command": "mingw32-make -j 32",
+            "command": "mingw32-make",
             "options": {
                 "cwd": "${workspaceFolder}\\build\\"
             },

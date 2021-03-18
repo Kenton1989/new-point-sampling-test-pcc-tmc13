@@ -1010,7 +1010,7 @@ computeNearestNeighbors(
     }
   }
   std::cout << "Case that candidate point smaller than 3: " << lackPointCase
-            << std::endl;
+            << " / " << endIndex - startIndex << std::endl;
 }
 
 //---------------------------------------------------------------------------
