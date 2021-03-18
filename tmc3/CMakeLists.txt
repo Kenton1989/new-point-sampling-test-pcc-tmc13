@@ -133,6 +133,7 @@ file(GLOB PROJECT_CPP_FILES
   "io_hls.cpp"
   "io_tlv.cpp"
   "misc.cpp"
+  "my_sampling_method.cpp"
   "osspecific.cpp"
   "partitioning.cpp"
   "pcc_chrono.cpp"

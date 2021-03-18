@@ -27,7 +27,7 @@ inline T dot(const Vec3<T>& a, const Vec3<T>& b) {
 }
 
 // Original sampling method
-inline void
+void
 knnSamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
@@ -43,7 +43,7 @@ knnSamplingMethod(
   }
 }
 
-inline void
+void
 mySamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
