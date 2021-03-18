@@ -26,11 +26,16 @@ inline T dot(const Vec3<T>& a, const Vec3<T>& b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
+// #define USE_EUCLIDEAN
+
 // dot product (inner product) of vectors
 inline void normalize(Vec3<FloatT>& a) {
+  #ifdef USE_EUCLIDEAN
   FloatT norm2 = dot(a, a);
   a /= sqrt(norm2);
-  // a /= a.getNorm1();
+  #else
+  a /= a.getNorm1();
+  #endif // USE_EUCLIDEAN
 }
 
 // Original sampling method
@@ -67,7 +72,7 @@ void mySamplingMethod(
   const int DIST_W = 1;
   // the larger the lod, the longer the distance
   // increase the weight of angle parameter accordingly
-  const int ANGLE_W = lodIndex + 1;
+  const FloatT ANGLE_W = 2*(lodIndex + 1);
   const int K = 3;
   const int MIN_CANDI = K;
 
