@@ -630,7 +630,7 @@ updateNearestNeighWithCheck(
 }
 
 //---------------------------------------------------------------------------
-
+// TODO - change KNN to mine sampling method
 inline void
 computeNearestNeighbors(
   const AttributeParameterSet& aps,
@@ -736,9 +736,9 @@ computeNearestNeighbors(
   int64_t cubeIndex = 0;
   for (int32_t i = startIndex, j = 0; i < endIndex; ++i) {
     int32_t localIndexes[3] = {-1, -1, -1};
-    int64_t minDistances[3] = {std::numeric_limits<int64_t>::max(),
-                               std::numeric_limits<int64_t>::max(),
-                               std::numeric_limits<int64_t>::max()};
+    int64_t minDistances[3] = {
+      std::numeric_limits<int64_t>::max(), std::numeric_limits<int64_t>::max(),
+      std::numeric_limits<int64_t>::max()};
 
     const int32_t index = indexes[i];
     const auto& pv = packedVoxel[index];
