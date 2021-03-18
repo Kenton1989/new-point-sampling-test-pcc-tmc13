@@ -789,6 +789,7 @@ computeNearestNeighbors(
         }
       }
 
+      // TODO - change the algorithm here from KNN to my algorithm
       for (const auto k : neighborIndexes) {
         updateNearestNeigh(
           bpoint, packedVoxel[retained[k]].bposition, k, localIndexes,
@@ -1718,6 +1719,8 @@ buildPredictorsFast(
   const int32_t pointCount = int32_t(pointCloud.getPointCount());
   assert(pointCount);
 
+  // Transform 3D coordination into Morton code
+  // structure of Morton code is similar to Kd Tree
   std::vector<MortonCodeWithIndex> packedVoxel;
   computeMortonCodesUnsorted(pointCloud, aps.lodNeighBias, packedVoxel);
 
