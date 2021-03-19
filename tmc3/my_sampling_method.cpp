@@ -1,4 +1,6 @@
 #include "PCCTMC3Common.h"
+#include "test_config.h"
+
 #include <algorithm>
 #include <iterator>
 #include <vector>
@@ -26,11 +28,9 @@ inline T dot(const Vec3<T>& a, const Vec3<T>& b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-// #define USE_EUCLIDEAN
-
 // dot product (inner product) of vectors
 inline void normalize(Vec3<FloatT>& a) {
-  #ifdef USE_EUCLIDEAN
+  #if USE_EUCLIDEAN
   FloatT norm2 = dot(a, a);
   a /= sqrt(norm2);
   #else
@@ -72,7 +72,7 @@ void mySamplingMethod(
   const int DIST_W = 1;
   // the larger the lod, the longer the distance
   // increase the weight of angle parameter accordingly
-  const FloatT ANGLE_W = 1.5*(1 << lodIndex);
+  const FloatT ANGLE_W = calAngleW(lodIndex);
   const int K = 3;
   const int MIN_CANDI = K;
 

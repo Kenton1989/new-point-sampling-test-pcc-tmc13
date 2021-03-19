@@ -48,6 +48,8 @@
 #include <memory>
 #include <vector>
 
+#include "test_config.h"
+
 namespace pcc {
 
 //============================================================================
@@ -821,11 +823,10 @@ computeNearestNeighbors(
         }
       }
 
-      // #define USE_NEW_METHOD
-      #ifndef USE_NEW_METHOD
-      Kenton::knnSamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, localIndexes, minDistances);
-      #else
+      #if USE_NEW_METHOD
       Kenton::mySamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
+      #else
+      Kenton::knnSamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, localIndexes, minDistances);
       #endif
 
       if (localIndexes[2] == -1) {
