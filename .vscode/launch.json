@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}\\build\\tmc3\\tmc3.exe",
             "args": [
-                "--uncompressedDataPath=\"pc-samples\\Shiva_00035_quantized.ply\"",
-                "--compressedStreamPath=\"compressed\\Shiva_00035_quantized.tmc3\"",
+                "--uncompressedDataPath=\"pc-samples\\andrew9_frame0027.ply\"",
+                "--compressedStreamPath=\"compressed\\andrew9_frame0027.tmc3\"",
                 "--attribute=color"
             ],
             "stopAtEntry": false,

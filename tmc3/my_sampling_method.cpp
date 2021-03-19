@@ -39,8 +39,7 @@ inline void normalize(Vec3<FloatT>& a) {
 }
 
 // Original sampling method
-void
-knnSamplingMethod(
+inline void knnSamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
@@ -55,7 +54,7 @@ knnSamplingMethod(
   }
 }
 
-void mySamplingMethod(
+inline void mySamplingMethod(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
@@ -129,6 +128,21 @@ void mySamplingMethod(
     return (anchor - pt).getNorm1();
   });
 }
+
+void samplingPoints(
+  const PointInt& anchor,
+  const std::vector<MortonCodeWithIndex>& packedVoxel,
+  const std::vector<uint32_t>& retained,
+  std::vector<int32_t>& neighborIndexes,
+  int32_t lodIndex,
+  int32_t (&localIndexes)[3],
+  int64_t (&minDistances)[3]) {
+      #if USE_NEW_METHOD
+      mySamplingMethod(anchor, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
+      #else
+      Kenton::knnSamplingMethod(anchor, packedVoxel, retained, neighborIndexes, localIndexes, minDistances);
+      #endif
+  }
 
 } // namespace Kenton
 

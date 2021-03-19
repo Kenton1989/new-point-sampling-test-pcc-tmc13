@@ -48,8 +48,6 @@
 #include <memory>
 #include <vector>
 
-#include "test_config.h"
-
 namespace pcc {
 
 //============================================================================
@@ -229,16 +227,7 @@ typedef float FloatT;
 typedef Vec3<int32_t> PointInt;
 typedef Vec3<FloatT> PointFlt;
 
-// Original sampling method
-void knnSamplingMethod(
-  const PointInt& anchor,
-  const std::vector<MortonCodeWithIndex>& packedVoxel,
-  const std::vector<uint32_t>& retained,
-  const std::vector<int32_t>& neighborIndexes,
-  int32_t (&localIndexes)[3],
-  int64_t (&minDistances)[3]);
-
-void mySamplingMethod(
+void samplingPoints(
   const PointInt& anchor,
   const std::vector<MortonCodeWithIndex>& packedVoxel,
   const std::vector<uint32_t>& retained,
@@ -823,11 +812,7 @@ computeNearestNeighbors(
         }
       }
 
-      #if USE_NEW_METHOD
-      Kenton::mySamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
-      #else
-      Kenton::knnSamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, localIndexes, minDistances);
-      #endif
+      Kenton::samplingPoints(bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
 
       if (localIndexes[2] == -1) {
         const auto center = localIndexes[0] == -1 ? j : localIndexes[0];
