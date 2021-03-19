@@ -821,12 +821,12 @@ computeNearestNeighbors(
         }
       }
 
+      // #define USE_NEW_METHOD
+      #ifndef USE_NEW_METHOD
+      Kenton::knnSamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, localIndexes, minDistances);
+      #else
       Kenton::mySamplingMethod(bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
-      // for (const auto k : neighborIndexes) {
-      //   updateNearestNeigh(
-      //     bpoint, packedVoxel[retained[k]].bposition, k, localIndexes,
-      //     minDistances);
-      // }
+      #endif
 
       if (localIndexes[2] == -1) {
         const auto center = localIndexes[0] == -1 ? j : localIndexes[0];

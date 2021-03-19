@@ -72,7 +72,7 @@ void mySamplingMethod(
   const int DIST_W = 1;
   // the larger the lod, the longer the distance
   // increase the weight of angle parameter accordingly
-  const FloatT ANGLE_W = 2*(lodIndex + 1);
+  const FloatT ANGLE_W = 1.5*(1 << lodIndex);
   const int K = 3;
   const int MIN_CANDI = K;
 
