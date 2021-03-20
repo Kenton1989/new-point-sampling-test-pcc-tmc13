@@ -223,21 +223,20 @@ struct MortonCodeWithIndex {
 
 namespace Kenton {
 
-typedef float FloatT;
-typedef Vec3<int32_t> PointInt;
-typedef Vec3<FloatT> PointFlt;
+  typedef float FloatT;
+  typedef Vec3<int32_t> PointInt;
+  typedef Vec3<FloatT> PointFlt;
 
-void samplingPoints(
-  const PointInt& anchor,
-  const std::vector<MortonCodeWithIndex>& packedVoxel,
-  const std::vector<uint32_t>& retained,
-  std::vector<int32_t>& neighborIndexes,
-  int32_t lodIndex,
-  int32_t (&localIndexes)[3],
-  int64_t (&minDistances)[3]);
+  void samplingPoints(
+    const PointInt& anchor,
+    const std::vector<MortonCodeWithIndex>& packedVoxel,
+    const std::vector<uint32_t>& retained,
+    std::vector<int32_t>& neighborIndexes,
+    int32_t lodIndex,
+    int32_t (&localIndexes)[3],
+    int64_t (&minDistances)[3]);
 
-} // namespace Kenton
-
+}  // namespace Kenton
 
 //---------------------------------------------------------------------------
 
@@ -754,7 +753,6 @@ computeNearestNeighbors(
   int64_t lastMortonCodeShift3 = -1;
   int64_t cubeIndex = 0;
 
-
   for (int32_t i = startIndex, j = 0; i < endIndex; ++i) {
     int32_t localIndexes[3] = {-1, -1, -1};
     int64_t minDistances[3] = {
@@ -800,7 +798,6 @@ computeNearestNeighbors(
         for (int32_t n = 0; n < 27; ++n) {
           const auto neighbMortonCode =
 
-
             morton3dAdd(basePosition, kNeighOffset[n]);
           if ((neighbMortonCode >> atlasBits) != curAtlasId) {
             continue;
@@ -812,7 +809,9 @@ computeNearestNeighbors(
         }
       }
 
-      Kenton::samplingPoints(bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes, minDistances);
+      Kenton::samplingPoints(
+        bpoint, packedVoxel, retained, neighborIndexes, lodIndex, localIndexes,
+        minDistances);
 
       if (localIndexes[2] == -1) {
         const auto center = localIndexes[0] == -1 ? j : localIndexes[0];
@@ -1258,11 +1257,9 @@ computeNearestNeighborsScalable(
       }
     }
 
-    for (const auto k : neighborIndexes) {
-      updateNearestNeighbor(
-        aps, pointCloud, packedVoxel, nodeSizeLog2, retained[k], point,
-        localNeighborCount, localNeighbors);
-    }
+    Kenton::mySamplingScalable(
+      aps, pointCloud, packedVoxel, retained, nodeSizeLog2, point,
+      neighborIndexes, localNeighborCount, localNeighbors);
 
     const int32_t k0 = std::max(0, j - aps.inter_lod_search_range);
     const int32_t k1 =
