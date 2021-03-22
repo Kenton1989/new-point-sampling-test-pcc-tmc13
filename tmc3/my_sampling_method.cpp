@@ -261,7 +261,7 @@ namespace Kenton {
     uint32_t& neighborCount,
     PCCNeighborInfo* neighbors)
   {
-#if USE_NEW_METHOD
+#if USE_NEW_SCALABLE_METHOD
     mySamplingScalable(
       aps, pointCloud, packedVoxel, retained, nodeSizeLog2, anchor,
       neighborIndexes, neighborCount, neighbors);
