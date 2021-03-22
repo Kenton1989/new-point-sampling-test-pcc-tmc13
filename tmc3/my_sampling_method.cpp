@@ -75,17 +75,31 @@ namespace Kenton {
     std::vector<FloatT> cost;
     cost.reserve(points.size());
 
+    size_t firstNon0 = 0;
     for (size_t i = 0; i < indexes.size(); ++i) {
       FloatT dist = points[i].getNorm1();
 
       // initialize cost as distance
       cost.push_back(dist);
 
-      // Normalize direction vector
-      points[i] /= dist;
+      if (dist > 0) {
+        // Normalize direction vector if not 0
+        points[i] /= dist;
+      } else {
+        // record points with 0 distance
+        if (firstNon0 != i) {
+          swapArrElem(firstNon0, i, cost, points, indexes);
+        }
+        ++firstNon0;
+      }
     }
 
-    // Use the nearest point as first candidate.
+    // So many 0 distance points, return directly
+    if (firstNon0 >= K) {
+      return;
+    }
+
+    // Use the nearest point as the first candidate.
     {
       // find the minimum value
       size_t minI = min_element(cost.begin(), cost.end()) - cost.begin();
@@ -208,20 +222,30 @@ namespace Kenton {
     dir.reserve(neighborIndexes.size());
 
     for (const auto k : neighborIndexes) {
-      // const PointInt& pt = packedVoxel[retained[k]].position;
       int32_t pointIndex = packedVoxel[retained[k]].index;
+      // adjust coordination depending on nodeSize
       PointInt point = clacIntermediatePosition(
         aps.scalable_lifting_enabled_flag, nodeSizeLog2,
         pointCloud[pointIndex]);
-      dir.push_back(point - anchor);
+      // add the biased direction vector
+      dir.push_back(times(point - anchor, aps.lodNeighBias));
     }
 
     kSurroundingNeighbor(neighborIndexes, dir, nodeSizeLog2);
 
+    int32_t minW = 1 << (nodeSizeLog2 - 1);
     // write out the result
     for (int i = 0; i < K; ++i) {
-      neighbors->predictorIndex = neighborIndexes[i];
-      // neighbors->weight =
+      neighbors[i].predictorIndex = neighborIndexes[i];
+
+      const PointInt& original =
+        pointCloud[packedVoxel[retained[neighborIndexes[i]]].index];
+      PointInt point = clacIntermediatePosition(
+        aps.scalable_lifting_enabled_flag, nodeSizeLog2, point);
+
+      neighbors[i].weight = times(point - anchor, aps.lodNeighBias).getNorm1();
+      if (neighbors[i].weight == 0)
+        neighbors[i].weight = minW;
     }
     neighborCount = K;
   }
