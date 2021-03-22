@@ -221,6 +221,18 @@ struct MortonCodeWithIndex {
 
 //---------------------------------------------
 
+//---------------------------------------------------------------------------
+
+struct PCCNeighborInfo {
+  uint64_t weight;
+  uint32_t predictorIndex;
+
+  bool operator<(const PCCNeighborInfo& rhs) const
+  {
+    return weight < rhs.weight;
+  }
+};
+
 namespace Kenton {
 
   typedef float FloatT;
@@ -236,19 +248,18 @@ namespace Kenton {
     int32_t (&localIndexes)[3],
     int64_t (&minDistances)[3]);
 
+  void samplingPointsScalable(
+    const AttributeParameterSet& aps,
+    const PCCPointSet3& pointCloud,
+    const std::vector<MortonCodeWithIndex>& packedVoxel,
+    const std::vector<uint32_t>& retained,
+    const int32_t nodeSizeLog2,
+    const PointInt& anchor,
+    std::vector<int32_t>& neighborIndexes,
+    uint32_t& neighborCount,
+    PCCNeighborInfo* neighbors);
+
 }  // namespace Kenton
-
-//---------------------------------------------------------------------------
-
-struct PCCNeighborInfo {
-  uint64_t weight;
-  uint32_t predictorIndex;
-
-  bool operator<(const PCCNeighborInfo& rhs) const
-  {
-    return weight < rhs.weight;
-  }
-};
 
 //---------------------------------------------------------------------------
 
@@ -307,16 +318,23 @@ struct PCCPredictor {
 
   void computeWeights()
   {
+    // shift = 1 given the fixed point decimal part size = kFixedPointWeightShift
     const uint32_t shift = (1 << kFixedPointWeightShift);
+
+    // make all weight smaller than 1
     int32_t n = 0;
     while ((neighbors[0].weight >> n) >= shift) {
       ++n;
     }
     if (n > 0) {
       for (size_t i = 0; i < neighborCount; ++i) {
+        // rounding the weight
         neighbors[i].weight = (neighbors[i].weight + (1ull << (n - 1))) >> n;
       }
     }
+
+    // until now, weight = distance from anchor
+    // filter out the point too far from anchor (?)
     while (neighborCount > 1) {
       if (
         neighbors[neighborCount - 1].weight
@@ -326,6 +344,8 @@ struct PCCPredictor {
         break;
       }
     }
+
+    // make the weight = 1/distance
     if (neighborCount <= 1) {
       neighbors[0].weight = shift;
     } else if (neighborCount == 2) {
@@ -1257,7 +1277,7 @@ computeNearestNeighborsScalable(
       }
     }
 
-    Kenton::mySamplingScalable(
+    Kenton::samplingPointsScalable(
       aps, pointCloud, packedVoxel, retained, nodeSizeLog2, point,
       neighborIndexes, localNeighborCount, localNeighbors);
 
