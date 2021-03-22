@@ -69,20 +69,20 @@ namespace Kenton {
 
   // Reorder the indexes such that k optimal results are at the front of array
   inline void kSurroundingNeighbor(
-    std::vector<int32_t>& indexes, std::vector<PointFlt>& dir, int lod)
+    std::vector<int32_t>& indexes, std::vector<PointFlt>& points, int32_t lod)
   {
     const FloatT ANGLE_W = calAngleW(lod);
     std::vector<FloatT> cost;
-    cost.reserve(dir.size());
+    cost.reserve(points.size());
 
     for (size_t i = 0; i < indexes.size(); ++i) {
-      FloatT dist = dir[i].getNorm1();
+      FloatT dist = points[i].getNorm1();
 
       // initialize cost as distance
       cost.push_back(dist);
 
       // Normalize direction vector
-      dir[i] /= dist;
+      points[i] /= dist;
     }
 
     // Use the nearest point as first candidate.
@@ -90,18 +90,18 @@ namespace Kenton {
       // find the minimum value
       size_t minI = min_element(cost.begin(), cost.end()) - cost.begin();
       // move it to the front, make sure all all the relative data are swapped.
-      swapArrElem(0, minI, cost, dir, indexes);
+      swapArrElem(0, minI, cost, points, indexes);
     }
 
     for (size_t i = 1; i < K; ++i) {
       // Update the cost with angular cost
       for (size_t j = i; j < indexes.size(); ++j) {
-        cost[j] += dot(dir[i - 1], dir[j]) * ANGLE_W;
+        cost[j] += dot(points[i - 1], points[j]) * ANGLE_W;
       }
       // find the minimum value
       size_t minI = min_element(cost.begin() + i, cost.end()) - cost.begin();
       // move it to the front, make sure all all the relative data are swapped.
-      swapArrElem(i, minI, cost, dir, indexes);
+      swapArrElem(i, minI, cost, points, indexes);
     }
   }
 
@@ -208,16 +208,21 @@ namespace Kenton {
     dir.reserve(neighborIndexes.size());
 
     for (const auto k : neighborIndexes) {
-      const PointInt& pt = packedVoxel[retained[k]].bposition;
-      // PointInt point = clacIntermediatePosition(
-      //   aps.scalable_lifting_enabled_flag, nodeSizeLog2, pt);
-      dir.push_back(pt - anchor);
+      // const PointInt& pt = packedVoxel[retained[k]].position;
+      int32_t pointIndex = packedVoxel[retained[k]].index;
+      PointInt point = clacIntermediatePosition(
+        aps.scalable_lifting_enabled_flag, nodeSizeLog2,
+        pointCloud[pointIndex]);
+      dir.push_back(point - anchor);
     }
 
     kSurroundingNeighbor(neighborIndexes, dir, nodeSizeLog2);
 
     // write out the result
-    std::copy_n(neighborIndexes.begin(), K, neighbors);
+    for (int i = 0; i < K; ++i) {
+      neighbors->predictorIndex = neighborIndexes[i];
+      // neighbors->weight =
+    }
     neighborCount = K;
   }
 
