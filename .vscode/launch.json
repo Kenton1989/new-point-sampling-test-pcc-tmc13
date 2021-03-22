@@ -12,7 +12,8 @@
             "args": [
                 "--uncompressedDataPath=\"pc-samples\\andrew9_frame0027.ply\"",
                 "--compressedStreamPath=\"compressed\\andrew9_frame0027.tmc3\"",
-                "--attribute=color"
+                "--transformType=2",
+                "--attribute=color",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}\\..",
