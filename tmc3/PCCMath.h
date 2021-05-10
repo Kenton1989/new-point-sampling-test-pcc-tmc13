@@ -94,7 +94,8 @@ public:
 
   T getNorm1() const
   {
-    return std::abs(data[0]) + std::abs(data[1]) + std::abs(data[2]);
+    using std::abs;
+    return abs(data[0]) + abs(data[1]) + abs(data[2]);
   }
 
   T getNormInf() const

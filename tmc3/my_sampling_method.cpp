@@ -38,7 +38,7 @@ namespace Kenton {
   {
 #if USE_EUCLIDEAN
     FloatT norm2 = dot(a, a);
-    a /= sqrt(norm2);
+    a /= sqrt((float)norm2);
 #else
     a /= a.getNorm1();
 #endif  // USE_EUCLIDEAN

@@ -42,6 +42,7 @@
 #include "hls.h"
 
 #include "nanoflann.hpp"
+#include "kenton_fixed_point.h"
 
 #include <cstdint>
 #include <cstddef>
@@ -235,7 +236,7 @@ struct PCCNeighborInfo {
 
 namespace Kenton {
 
-  typedef float FloatT;
+  typedef ::Kenton::FixedPoint32<8> FloatT;
   typedef Vec3<int32_t> PointInt;
   typedef Vec3<FloatT> PointFlt;
 
