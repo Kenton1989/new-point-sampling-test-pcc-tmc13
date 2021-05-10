@@ -1,9 +1,10 @@
 #include "PCCTMC3Common.h"
-#include "test_config.h"
 
 #include <algorithm>
 #include <iterator>
 #include <vector>
+
+#include "test_config.h"
 
 namespace pcc {
 
@@ -84,7 +85,7 @@ namespace Kenton {
 
       if (dist > 0) {
         // Normalize direction vector if not 0
-        points[i] /= dist;
+        normalize(points[i]);
       } else {
         // record points with 0 distance
         if (firstNon0 != i) {
@@ -140,6 +141,15 @@ namespace Kenton {
       return;
     }
 
+#ifdef DEBUG
+    int32_t knnIndexs[3] = {-1, -1, -1};
+    int64_t knnDist[3] = {INT64_MAX, INT64_MAX, INT64_MAX};
+    if (!calAngleW(lodIndex)) {
+      knnSamplingMethod(
+        anchor, packedVoxel, retained, neighborIndexes, knnIndexs, knnDist);
+    }
+#endif  // DEBUG
+
     // direction of each point from anchor
     vector<Vec3<FloatT>> dir;
     dir.reserve(neighborIndexes.size());
@@ -159,6 +169,14 @@ namespace Kenton {
         const PointInt& pt = packedVoxel[retained[k]].bposition;
         return (anchor - pt).getNorm1();
       });
+
+#ifdef DEBUG
+    if (!calAngleW(lodIndex)) {
+      if (memcmp(knnDist, minDistances, sizeof(knnDist)) != 0) {
+        std::cerr << "unexpected" << std::endl;
+      }
+    }
+#endif  // DEBUG
   }
 
   void samplingPoints(
