@@ -12,7 +12,7 @@
             "args": [
                 "--uncompressedDataPath=\"pc-samples\\andrew9_frame0027.ply\"",
                 "--compressedStreamPath=\"compressed\\andrew9_frame0027.tmc3\"",
-                "--transformType=2",
+                // "--transformType=2",
                 "--attribute=color",
             ],
             "stopAtEntry": false,

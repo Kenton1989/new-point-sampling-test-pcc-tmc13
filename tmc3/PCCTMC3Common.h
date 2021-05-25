@@ -236,9 +236,7 @@ struct PCCNeighborInfo {
 
 namespace Kenton {
 
-  typedef ::Kenton::FixedPoint32<8> FloatT;
   typedef Vec3<int32_t> PointInt;
-  typedef Vec3<FloatT> PointFlt;
 
   void samplingPoints(
     const PointInt& anchor,

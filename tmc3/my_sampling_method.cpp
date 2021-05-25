@@ -9,6 +9,8 @@
 namespace pcc {
 
 namespace Kenton {
+  typedef float FloatT;
+  typedef Vec3<FloatT> PointFlt;
 
   // edge case of swapArrElem below
   inline void swapArrElem(size_t i, size_t j)
@@ -63,8 +65,6 @@ namespace Kenton {
 
   // Model Parameters
   const int DIST_W = 1;
-  // the larger the lod, the longer the distance
-  // increase the weight of angle parameter accordingly
   const int K = kAttributePredictionMaxNeighbourCount;
   const int MIN_CANDI = K;
 
@@ -72,6 +72,8 @@ namespace Kenton {
   inline void kSurroundingNeighbor(
     std::vector<int32_t>& indexes, std::vector<PointFlt>& points, int32_t lod)
   {
+    // the larger the lod, the longer the distance
+    // increase the weight of angle parameter accordingly
     const FloatT ANGLE_W = calAngleW(lod);
     std::vector<FloatT> cost;
     cost.reserve(points.size());
